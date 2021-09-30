@@ -88,12 +88,10 @@ func TestDump(t *testing.T) {
 	add1 := common.BytesToAddress([]byte{0x01})
 	obj1 := s.state.GetOrNewStateObject(add1)
 	obj1.AddBalance(big.NewInt(22))
-	/*
-		obj2 := s.state.GetOrNewStateObject(common.BytesToAddress([]byte{0x01, 0x02}))
-		obj2.SetCode(crypto.Keccak256Hash([]byte{3, 3, 3, 3, 3, 3, 3}), []byte{3, 3, 3, 3, 3, 3, 3})
-		obj3 := s.state.GetOrNewStateObject(common.BytesToAddress([]byte{0x02}))
-		obj3.SetBalance(big.NewInt(44))
-	*/
+	obj2 := s.state.GetOrNewStateObject(common.BytesToAddress([]byte{0x01, 0x02}))
+	obj2.SetCode(crypto.Keccak256Hash([]byte{3, 3, 3, 3, 3, 3, 3}), []byte{3, 3, 3, 3, 3, 3, 3})
+	obj3 := s.state.GetOrNewStateObject(common.BytesToAddress([]byte{0x02}))
+	obj3.SetBalance(big.NewInt(44))
 
 	// write some of them to the trie
 	s.state.updateStateObject(obj1) // done in IntermediateRoot anyway
@@ -109,6 +107,14 @@ func TestDump(t *testing.T) {
 	// proof, _ := s.state.GetProof(add1)
 	addrHash := crypto.Keccak256Hash(add1.Bytes())
 	err := s.state.trie.Prove(addrHash[:], 0, w)
+	fmt.Println("error:")
+	fmt.Println(err)
+
+	// what about proof for empty address?
+	f := common.Address{}
+	f1 := f[:]
+	emptyAddrHash := crypto.Keccak256Hash(f1)
+	err = s.state.trie.Prove(emptyAddrHash[:], 0, w)
 	fmt.Println("error:")
 	fmt.Println(err)
 

@@ -35,6 +35,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rlp"
 )
@@ -98,6 +99,17 @@ type btHeaderMarshaling struct {
 	BaseFeePerGas *math.HexOrDecimal256
 }
 
+func keybytesToHex(str []byte) []byte {
+	l := len(str)*2 + 1
+	var nibbles = make([]byte, l)
+	for i, b := range str {
+		nibbles[i*2] = b / 16
+		nibbles[i*2+1] = b % 16
+	}
+	nibbles[l-1] = 16
+	return nibbles
+}
+
 func (t *BlockTest) Run(snapshotter bool) error {
 	config, ok := Forks[t.json.Network]
 	if !ok {
@@ -145,6 +157,36 @@ func (t *BlockTest) Run(snapshotter bool) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("----------")
+	add1 := common.HexToAddress("aaaf5374fce5edbc8e2a8697c15331677e6ebaaa")
+	fmt.Println(add1.Bytes())
+	k1 := crypto.Keccak256Hash(add1.Bytes())
+	fmt.Println(k1)
+	fmt.Println(k1.Bytes())
+	fmt.Println(keybytesToHex(k1.Bytes()))
+
+	fmt.Println("----------")
+	add2 := common.HexToAddress("3fb1cd2cd96c6d5c0b5eb3322d807b34482481d4")
+	fmt.Println(add2.Bytes())
+	k2 := crypto.Keccak256Hash(add2.Bytes())
+	fmt.Println(k2)
+	fmt.Println(k2.Bytes())
+	fmt.Println(keybytesToHex(k2.Bytes()))
+
+	fmt.Println("----------")
+	add3 := common.HexToAddress("a94f5374fce5edbc8e2a8697c15331677e6ebf0b")
+	fmt.Println(add3.Bytes())
+	k3 := crypto.Keccak256Hash(add3.Bytes())
+	fmt.Println(k3)
+	fmt.Println(k3.Bytes())
+	fmt.Println(keybytesToHex(k3.Bytes()))
+
+	p, err := newDB.GetProof(add1)
+	fmt.Println("++++++++=================+++++++++")
+	fmt.Println(err)
+	fmt.Println(p)
+
 	if err = t.validatePostState(newDB); err != nil {
 		return fmt.Errorf("post state validation failed: %v", err)
 	}

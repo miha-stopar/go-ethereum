@@ -253,6 +253,17 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 	}
 }
 
+func keybytesToHex(str []byte) []byte {
+	l := len(str)*2 + 1
+	var nibbles = make([]byte, l)
+	for i, b := range str {
+		nibbles[i*2] = b / 16
+		nibbles[i*2+1] = b % 16
+	}
+	nibbles[l-1] = 16
+	return nibbles
+}
+
 // ToBlock creates the genesis block and writes state of a genesis specification
 // to the given database (or discards it if nil).
 func (g *Genesis) ToBlock(db ethdb.Database) *types.Block {
@@ -263,7 +274,16 @@ func (g *Genesis) ToBlock(db ethdb.Database) *types.Block {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("??????????????????")
+	fmt.Println(len(g.Alloc))
 	for addr, account := range g.Alloc {
+		fmt.Println("----+++------")
+		fmt.Println(addr.Bytes())
+		k1 := crypto.Keccak256Hash(addr.Bytes())
+		fmt.Println(k1)
+		fmt.Println(k1.Bytes())
+		fmt.Println(keybytesToHex(k1.Bytes()))
+
 		statedb.AddBalance(addr, account.Balance)
 		statedb.SetCode(addr, account.Code)
 		statedb.SetNonce(addr, account.Nonce)

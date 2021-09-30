@@ -468,8 +468,8 @@ func (s *StateDB) updateStateObject(obj *stateObject) {
 	}
 	// Encode the account and update the account trie
 	addr := obj.Address()
-	fmt.Println("address ----------")
-	fmt.Println(addr.Bytes())
+	// fmt.Println("address ----------")
+	// fmt.Println(addr.Bytes())
 
 	data, err := rlp.EncodeToBytes(obj)
 	if err != nil {
