@@ -325,14 +325,6 @@ func (s *StateDB) GetProofByHash(addrHash common.Hash) ([][]byte, error) {
 	return proof, err
 }
 
-/*
-// added for debugging (Miha)
-func (s *StateDB) VerifyProof(rootHash common.Hash, key []byte, proofDb ethdb.KeyValueReader) ([][]byte, error) {
-	val, err := s.trie.VerifyProof(rootHash, key, proofDb)
-	return val, err
-}
-*/
-
 // GetStorageProof returns the Merkle proof for given storage slot.
 func (s *StateDB) GetStorageProof(a common.Address, key common.Hash) ([][]byte, error) {
 	var proof proofList

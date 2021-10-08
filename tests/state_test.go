@@ -21,23 +21,26 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/core/vm"
 )
 
 func TestState(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 
 	st := new(testMatcher)
 	// Long tests:
-	st.slow(`^stAttackTest/ContractCreationSpam`)
-	st.slow(`^stBadOpcode/badOpcodes`)
-	st.slow(`^stPreCompiledContracts/modexp`)
-	st.slow(`^stQuadraticComplexityTest/`)
-	st.slow(`^stStaticCall/static_Call50000`)
-	st.slow(`^stStaticCall/static_Return50000`)
-	st.slow(`^stSystemOperationsTest/CallRecursiveBomb`)
+	/*
+		st.slow(`^stAttackTest/ContractCreationSpam`)
+		st.slow(`^stBadOpcode/badOpcodes`)
+		st.slow(`^stPreCompiledContracts/modexp`)
+		st.slow(`^stQuadraticComplexityTest/`)
+		st.slow(`^stStaticCall/static_Call50000`)
+		st.slow(`^stStaticCall/static_Return50000`)
+		st.slow(`^stSystemOperationsTest/CallRecursiveBomb`)
+	*/
 	st.slow(`^stTransactionTest/Opcodes_TransactionInit`)
 
 	// Very time consuming
@@ -65,6 +68,16 @@ func TestState(t *testing.T) {
 			for _, subtest := range test.Subtests() {
 				subtest := subtest
 				key := fmt.Sprintf("%s/%d", subtest.Fork, subtest.Index)
+
+				fmt.Println("+++======+++++++=")
+				fmt.Println(stateTestDir)
+				// fmt.Println(test)
+				fmt.Println(name)
+				// if strings.Contains(name, "stStackTests") {
+				// if strings.Contains(name, "stackOverflowDUP") {
+				if strings.Contains(name, "underflowTest") {
+					fmt.Println("----")
+				}
 
 				t.Run(key+"/trie", func(t *testing.T) {
 					withTrace(t, test.gasLimit(subtest), func(vmconfig vm.Config) error {

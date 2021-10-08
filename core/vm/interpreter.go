@@ -17,7 +17,9 @@
 package vm
 
 import (
+	"fmt"
 	"hash"
+	"strings"
 	"sync/atomic"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -200,8 +202,14 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		}
 		// Validate stack
 		if sLen := stack.len(); sLen < operation.minStack {
+			if strings.Contains(op.String(), "DUP") {
+				fmt.Println("DUP underflow")
+			}
 			return nil, &ErrStackUnderflow{stackLen: sLen, required: operation.minStack}
 		} else if sLen > operation.maxStack {
+			if strings.Contains(op.String(), "DUP") {
+				fmt.Println("DUP overflow")
+			}
 			return nil, &ErrStackOverflow{stackLen: sLen, limit: operation.maxStack}
 		}
 		// If the operation is valid, enforce write restrictions

@@ -274,15 +274,19 @@ func (g *Genesis) ToBlock(db ethdb.Database) *types.Block {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("??????????????????")
-	fmt.Println(len(g.Alloc))
+	/*
+		fmt.Println("??????????????????")
+		fmt.Println(len(g.Alloc))
+	*/
 	for addr, account := range g.Alloc {
-		fmt.Println("----+++------")
-		fmt.Println(addr.Bytes())
-		k1 := crypto.Keccak256Hash(addr.Bytes())
-		fmt.Println(k1)
-		fmt.Println(k1.Bytes())
-		fmt.Println(keybytesToHex(k1.Bytes()))
+		/*
+			fmt.Println("----+++------")
+			fmt.Println(addr.Bytes())
+			k1 := crypto.Keccak256Hash(addr.Bytes())
+			fmt.Println(k1)
+			fmt.Println(k1.Bytes())
+			fmt.Println(keybytesToHex(k1.Bytes()))
+		*/
 
 		statedb.AddBalance(addr, account.Balance)
 		statedb.SetCode(addr, account.Code)
