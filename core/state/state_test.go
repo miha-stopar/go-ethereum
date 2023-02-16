@@ -97,6 +97,9 @@ func TestDump(t *testing.T) {
 	s.state.updateStateObject(obj1) // done in IntermediateRoot anyway
 	// s.state.updateStateObject(obj2)
 
+	// r1, _ := rlp.EncodeToBytes(obj1)
+	// fmt.Println(r1)
+
 	root, _ := s.state.Commit(false)
 	fmt.Println("root ++++++")
 	fmt.Println(root.Bytes())
@@ -106,17 +109,24 @@ func TestDump(t *testing.T) {
 
 	// proof, _ := s.state.GetProof(add1)
 	addrHash := crypto.Keccak256Hash(add1.Bytes())
-	err := s.state.trie.Prove(addrHash[:], 0, w)
+	ff := addrHash.Bytes()[0:(len(addrHash.Bytes()) - 1)]
+	ff = append(ff, 1)
+	addrHash.SetBytes(ff)
+
+	// err := s.state.trie.Prove(addrHash[:], 0, w)
+	err := s.state.trie.Prove(ff[:], 0, w)
 	fmt.Println("error:")
 	fmt.Println(err)
 
-	// what about proof for empty address?
-	f := common.Address{}
-	f1 := f[:]
-	emptyAddrHash := crypto.Keccak256Hash(f1)
-	err = s.state.trie.Prove(emptyAddrHash[:], 0, w)
-	fmt.Println("error:")
-	fmt.Println(err)
+	/*
+		// what about proof for empty address?
+		f := common.Address{}
+		f1 := f[:]
+		emptyAddrHash := crypto.Keccak256Hash(f1)
+		err = s.state.trie.Prove(emptyAddrHash[:], 0, w)
+		fmt.Println("error:")
+		fmt.Println(err)
+	*/
 
 	fmt.Println("proof ++++++")
 	fmt.Println(w)
