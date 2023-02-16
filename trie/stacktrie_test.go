@@ -18,12 +18,16 @@ package trie
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethdb/memorydb"
+	"github.com/ethereum/go-ethereum/params"
 )
 
 func TestSizeBug(t *testing.T) {
@@ -120,9 +124,11 @@ func TestUpdateSmallNodes(t *testing.T) {
 // The test is marked as 'skipped', and exists just to have the behaviour documented.
 // This case was found via fuzzing.
 func TestUpdateVariableKeys(t *testing.T) {
-	t.SkipNow()
-	st := NewStackTrie(nil)
+	// t.SkipNow()
+	// st := NewStackTrie(nil)
 	nt, _ := New(common.Hash{}, NewDatabase(memorydb.New()))
+
+	/*
 	kvs := []struct {
 		K string
 		V string
@@ -134,9 +140,26 @@ func TestUpdateVariableKeys(t *testing.T) {
 		nt.TryUpdate(common.FromHex(kv.K), common.FromHex(kv.V))
 		st.TryUpdate(common.FromHex(kv.K), common.FromHex(kv.V))
 	}
+	*/
+
+	// Edu's code
+	kvs := []struct {
+        K string
+        V string
+    }{
+        {"0x010203", "303030"},
+        {"0x01020304", "313131"},
+    }
+    for _, kv := range kvs {
+        nt.Update(common.FromHex(kv.K), common.FromHex(kv.V))
+    }
+	// Edu's code end
+
+	/*
 	if nt.Hash() != st.Hash() {
 		t.Fatalf("error %x != %x", st.Hash(), nt.Hash())
 	}
+	*/
 }
 
 // TestStacktrieNotModifyValues checks that inserting blobs of data into the
@@ -230,4 +253,34 @@ func TestStacktrieSerialization(t *testing.T) {
 	if have, want := st.Hash(), nt.Hash(); have != want {
 		t.Fatalf("have %#x want %#x", have, want)
 	}
+}
+
+func TestStacktrieTransactions(t *testing.T) {
+	txs := make([]*types.Transaction, 70)
+	key, _   := crypto.GenerateKey()
+	// receipts = make([]*Receipt, len(txs))
+	signer := types.LatestSigner(params.TestChainConfig)
+
+	fmt.Println(txs)
+	fmt.Println(key)
+	fmt.Println(signer)
+
+	for i := range txs {
+		amount := math.BigPow(2, int64(i))
+		price := big.NewInt(300000)
+		data := make([]byte, 100)
+		tx := types.NewTransaction(uint64(i), common.Address{}, amount, 123457, price, data)
+		signedTx, err := types.SignTx(tx, signer, key)
+		if err != nil {
+			panic(err)
+		}
+		txs[i] = signedTx
+		// receipts[i] = NewReceipt(make([]byte, 32), false, tx.Gas())
+	}
+
+	tree := NewStackTrie(nil)
+
+	types.DeriveSha(types.Transactions(txs), tree)
+
+	fmt.Println(tree)
 }

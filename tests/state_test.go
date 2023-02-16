@@ -27,7 +27,7 @@ import (
 )
 
 func TestState(t *testing.T) {
-	t.Parallel()
+	// t.Parallel()
 
 	st := new(testMatcher)
 	// Long tests:

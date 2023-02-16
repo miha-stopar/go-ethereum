@@ -17,6 +17,7 @@
 package vm
 
 import (
+	"fmt"
 	"hash"
 	"sync/atomic"
 
@@ -221,6 +222,12 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 			return nil, ErrOutOfGas
 		}
 
+		/*
+			if operation.execute == "github.com/ethereum/go-ethereum/core/vm.opMload" {
+				fmt.Println("foooo")
+			}
+		*/
+
 		var memorySize uint64
 		// calculate the new memory size and expand the memory to fit
 		// the operation
@@ -228,6 +235,9 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 		// to detect calculation overflows
 		if operation.memorySize != nil {
 			memSize, overflow := operation.memorySize(stack)
+			if memSize > 0 {
+				fmt.Println("----")
+			}
 			if overflow {
 				return nil, ErrGasUintOverflow
 			}
@@ -249,6 +259,7 @@ func (in *EVMInterpreter) Run(contract *Contract, input []byte, readOnly bool) (
 			}
 		}
 		if memorySize > 0 {
+			fmt.Println(operation.execute)
 			mem.Resize(memorySize)
 		}
 
